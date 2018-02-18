@@ -1,0 +1,7 @@
+numpy
+matplotlib
+keras
+scipy
+opencv-contrib-python
+IPython
+h5py
