@@ -6,6 +6,7 @@ data/
 dc_img/
 # C extensions
 *.so
+.vscode/
 
 # Distribution / packaging
 .Python

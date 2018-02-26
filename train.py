@@ -20,7 +20,7 @@ if not os.path.exists('./dc_img'):
 num_epochs = 15
 batch_size = 3
 learning_rate = 1e-3
-size = 28
+size = 1024
 
 
 def cv2_loader(filename):
@@ -34,7 +34,7 @@ img_transform = transforms.Compose([
     transforms.ToTensor(),
     # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ])
-dir = "/home/skutukov/cloud/sample_images/test"
+dir = "/home/skutukov96/cloud/sample_images/test"
 dataset = ImageFolder(dir, loader=cv2_loader, transform=img_transform)
 # print(dataset.classes)
 # print(dataset.imgs)
