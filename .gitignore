@@ -6,7 +6,7 @@ __pycache__/
 #ignore model
 data/
 dc_img/
-conv_autoencoder.pth
+output/
 
 # C extensions
 *.so
