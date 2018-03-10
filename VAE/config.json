@@ -1,7 +1,7 @@
 {
- "train_directory": "/home/skutukov96/cloud/sample_images/valid",
+ "train_directory": "/home/skutukov96/cloud/sample_images/test",
   "batch_size": 5,
-  "num_epochs": 200,
+  "num_epochs": 500,
   "is_cuda": false,
   "check_point_period":5,
   "checkpoint_file":"./output/checkpoint.pth.tar"

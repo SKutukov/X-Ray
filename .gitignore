@@ -4,9 +4,9 @@ __pycache__/
 *$py.class
 
 #ignore model
-data/
-dc_img/
-output/
+*data/
+*dc_img/
+*output/
 
 # C extensions
 *.so
