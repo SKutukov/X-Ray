@@ -12,12 +12,16 @@ import torch.utils.data
 import torchvision.utils as vutils
 from torch.autograd import Variable
 
+import json
 
+import matplotlib.pyplot as plt
 
 from model import netD, netG
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
+
+import statistics
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -37,6 +41,7 @@ if __name__ == '__main__':
     parser.add_argument('--netD', default='', help="path to netD (to continue training)")
     parser.add_argument('--outf', default='.', help='folder to output images and model checkpoints')
     parser.add_argument('--manualSeed', type=int, help='manual seed')
+    parser.add_argument('--resume', action='store_true', help='is resume previouse work')
 
 
     opt = parser.parse_args()
@@ -127,8 +132,36 @@ if __name__ == '__main__':
     # setup optimizer
     optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
     optimizerG = optim.Adam(netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+    
+    epoch_begin = 1
+    epochs = []
+    Loss_D = []
+    Loss_G = []
+    D_x_list = []
+    D_G_z1_list = [] 
+    D_G_z2_list = []
 
-    for epoch in range(opt.niter):
+    config_name = "dcgan/config.json"
+    if opt.resume:
+        from initLoadModel import loadFromCheckpoint
+        Loss_D, Loss_G, D_x_list, D_G_z1_list, D_G_z2_list, epochs,  epoch_begin = loadFromCheckpoint(config_name, opt.outf)
+
+    with  open(config_name):
+        data = json.load(open(config_name))
+        Loss_D_file = os.path.join(opt.outf,data["Loss_D"])
+        Loss_G_file = os.path.join(opt.outf,data["Loss_G"])
+        D_x_list_file = os.path.join(opt.outf,data["D_x_list"])
+        D_G_z1_list_file = os.path.join(opt.outf,data["D_G_z1_list"])
+        D_G_z2_list_file = os.path.join(opt.outf,data["D_G_z2_list"])
+
+        
+    for epoch in range(epoch_begin , opt.niter):
+        Loss_D_stat = []
+        Loss_G_stat = []
+        D_x_stat = []
+        D_G_z1_list_stat = []
+        D_G_z2_list_stat = []
+
         for i, data in enumerate(dataloader, 0):
             ############################
             # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
@@ -175,6 +208,7 @@ if __name__ == '__main__':
             print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f D(x): %.4f D(G(z)): %.4f / %.4f'
                   % (epoch, opt.niter, i, len(dataloader),
                      errD.data[0], errG.data[0], D_x, D_G_z1, D_G_z2))
+
             if i % 100 == 0:
                 vutils.save_image(real_cpu,
                         '%s/real_samples.png' % opt.outf,
@@ -183,7 +217,61 @@ if __name__ == '__main__':
                 vutils.save_image(fake.data,
                         '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
                         normalize=True)
+            
+            Loss_D_stat.append(errD.data[0])
+            Loss_G_stat.append(errG.data[0])
+            D_x_stat.append(D_x)
+            D_G_z1_list_stat.append(D_G_z1)
+            D_G_z2_list_stat.append(D_G_z2)
 
+        print('[Mean / Dist] Loss_D : [%.4f / %.4f ] Loss_G : [%.4f / %.4f ] D(x): [%.4f / %.4f ] D(G(z)): [%.4f / %.4f ] / [%.4f / %.4f ]'
+                % ( statistics.mean(Loss_D_stat), statistics.variance(Loss_D_stat),
+                    statistics.mean(Loss_G_stat), statistics.variance(Loss_G_stat),
+                    statistics.mean(D_x_stat), statistics.variance(D_x_stat),
+                    statistics.mean(D_G_z1_list_stat), statistics.variance(D_G_z1_list_stat),
+                    statistics.mean(D_G_z2_list_stat), statistics.variance(D_G_z2_list_stat)
+                ))
+
+        Loss_D.append(statistics.mean(Loss_D_stat))
+        Loss_G.append(statistics.mean(Loss_G_stat))
+        D_x_list.append(statistics.mean(D_x_stat))
+        D_G_z1_list.append(statistics.mean(D_G_z1_list_stat))
+        D_G_z2_list.append(statistics.mean(D_G_z2_list_stat))
+        epochs.append(epoch)
         # do checkpointing
         torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % (opt.outf, epoch))
         torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % (opt.outf, epoch))
+       
+        def write_list(filename, data):
+            thefile = open(filename, 'a')
+            thefile.write("%s\n" % data)
+
+        write_list(Loss_D_file,statistics.mean(Loss_D_stat))
+        write_list(Loss_G_file,statistics.mean(Loss_G_stat))
+        write_list(D_x_list_file,statistics.mean(D_x_stat))
+        write_list(D_G_z1_list_file, statistics.mean(D_G_z1_list_stat))
+        write_list(D_G_z2_list_file, statistics.mean(D_G_z2_list_stat))
+            
+        def plotLosses():
+            plt.title('Losses')
+            plt.plot(epochs,Loss_D,epochs,Loss_G)
+            plt.savefig('losses.png', format = 'png')
+            plt.clf()   # Clear figure
+
+        def plotDiscr():
+            plt.title('D_x')
+            plt.plot(epochs,D_x_list)
+            plt.savefig('Discriminator.png', format = 'png')
+            plt.clf()   # Clear figure
+
+        def plotDGLoss():
+            plt.title('DG losses')
+            plt.plot(epochs,D_G_z1_list,epochs,D_G_z2_list)
+            plt.grid()
+            plt.savefig('DG losses.png', format = 'png')
+            plt.clf()   # Clear figure
+
+        plotLosses()
+        plotDiscr()
+        plotDGLoss()
+        plt.close()

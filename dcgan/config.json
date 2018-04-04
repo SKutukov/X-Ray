@@ -1,0 +1,9 @@
+{
+ "Loss_D": "Loss_D.txt",
+ "Loss_G": "Loss_G.txt",
+ "D_x_list": "D_x_list.txt",
+ "D_G_z1_list": "D_G_z1_list.txt",
+ "D_G_z2_list": "D_G_z2_list.txt",
+ "epoch_begin": 20
+
+}

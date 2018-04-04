@@ -19,7 +19,7 @@ if not os.path.exists('./dc_img'):
     os.mkdir('./dc_img')
 
 learning_rate = 1e-3
-size = 512
+size = 64
     
 def cv2_loader(filename):
     im = cv2.imread(filename, 0)
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     img_transform = transforms.Compose([
     transforms.ToPILImage(),
     transforms.ToTensor(),
-    # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
     dataset = ImageFolder(train_directory, loader=cv2_loader, transform=img_transform)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)

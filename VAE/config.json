@@ -1,6 +1,6 @@
 {
- "train_directory": "/home/skutukov/cloud/sample_images/valid",
-  "batch_size": 3,
+ "train_directory": "/home/skutukov96/diplom/train",
+  "batch_size": 64,
   "num_epochs": 15
  
 
