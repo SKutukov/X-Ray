@@ -16,7 +16,7 @@ import json
 
 import matplotlib.pyplot as plt
 
-from model import netD, netG
+from model_128 import netD, netG
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
@@ -251,27 +251,3 @@ if __name__ == '__main__':
         write_list(D_x_list_file,statistics.mean(D_x_stat))
         write_list(D_G_z1_list_file, statistics.mean(D_G_z1_list_stat))
         write_list(D_G_z2_list_file, statistics.mean(D_G_z2_list_stat))
-            
-        def plotLosses():
-            plt.title('Losses')
-            plt.plot(epochs,Loss_D,epochs,Loss_G)
-            plt.savefig('losses.png', format = 'png')
-            plt.clf()   # Clear figure
-
-        def plotDiscr():
-            plt.title('D_x')
-            plt.plot(epochs,D_x_list)
-            plt.savefig('Discriminator.png', format = 'png')
-            plt.clf()   # Clear figure
-
-        def plotDGLoss():
-            plt.title('DG losses')
-            plt.plot(epochs,D_G_z1_list,epochs,D_G_z2_list)
-            plt.grid()
-            plt.savefig('DG losses.png', format = 'png')
-            plt.clf()   # Clear figure
-
-        plotLosses()
-        plotDiscr()
-        plotDGLoss()
-        plt.close()
