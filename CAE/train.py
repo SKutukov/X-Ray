@@ -46,7 +46,7 @@ if __name__ == '__main__':
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 
-    model = autoencoder()#.cuda()
+    model = autoencoder().cuda()
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate,
                              weight_decay=1e-5)
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     for epoch in range(num_epochs):
         for data in dataloader:
             img, _ = data
-            img = Variable(img)#.cuda()
+            img = Variable(img).cuda()
             # ===================forward=====================
             output = model(img)
             loss = criterion(output, img)

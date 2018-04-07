@@ -1,0 +1,7 @@
+{
+ "train_directory": "/home/skutukov96/diplom/ChestXRAY/train",
+  "batch_size": 64,
+  "num_epochs": 1000
+ 
+
+}

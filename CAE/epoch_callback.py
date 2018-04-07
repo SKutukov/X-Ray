@@ -25,8 +25,7 @@ def save_cv2(epoch,path, im):
 def on_epoch_end(epoch, num_epochs, loss, output, size):
     print('epoch [{}/{}], loss:{:.4f}'
         .format(epoch+1, num_epochs, loss.data[0]))
-    if epoch % 2 == 0:
-        data = output.cpu().data
-        pic = to_img(data, size)
-        save_image(pic, './dc_img/image_{}.png'.format(epoch),nrow=1)
+    data = output.cpu().data
+    pic = to_img(data, size)
+    save_image(pic, './dc_img/image_{}.png'.format(epoch),nrow=8)
 
