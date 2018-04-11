@@ -19,7 +19,7 @@ if not os.path.exists('./dc_img'):
     os.mkdir('./dc_img')
 
 learning_rate = 1e-3
-size = 64
+size = 256
     
 def cv2_loader(filename):
     im = cv2.imread(filename, 0)
@@ -29,7 +29,7 @@ def cv2_loader(filename):
 
 
 if __name__ == '__main__':
-        #geting params
+    #geting params
     config_name = './config.json'
     with  open(config_name):
         data = json.load(open(config_name))
@@ -63,5 +63,5 @@ if __name__ == '__main__':
             loss.backward()
             optimizer.step()
         # ===================log========================
-        on_epoch_end(epoch, num_epochs, loss, output, size)        
+        on_epoch_end(epoch, num_epochs, loss, output, size, img)        
         save_model(epoch, model)    

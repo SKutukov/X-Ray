@@ -1,4 +1,5 @@
 from torchvision.utils import save_image
+import torch
 import os
 import cv2
 
@@ -22,10 +23,15 @@ def save_cv2(epoch,path, im):
     cv2.imwrite(im_path,im)
 
 
-def on_epoch_end(epoch, num_epochs, loss, output, size):
+def on_epoch_end(epoch, num_epochs, loss, output, size, input):
     print('epoch [{}/{}], loss:{:.4f}'
         .format(epoch+1, num_epochs, loss.data[0]))
-    data = output.cpu().data
-    pic = to_img(data, size)
-    save_image(pic, './dc_img/image_{}.png'.format(epoch),nrow=8)
+    # data = output.cpu().data
+    # inp_data = inp.cpu().data
+    # pic = to_img(data, size)
+    # print(pic)
+    n = min(output.size(0), 8)
+    comparison = torch.cat([input[:n],
+                                  output[:n]])
+    save_image(comparison.cpu().data, './result/dc_img/image_{}.png'.format(epoch),nrow=8)
 
