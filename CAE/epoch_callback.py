@@ -23,13 +23,9 @@ def save_cv2(epoch,path, im):
     cv2.imwrite(im_path,im)
 
 
-def on_epoch_end(epoch, num_epochs, loss, output, size, input):
-    print('epoch [{}/{}], loss:{:.4f}'
-        .format(epoch+1, num_epochs, loss.data[0]))
-    # data = output.cpu().data
-    # inp_data = inp.cpu().data
-    # pic = to_img(data, size)
-    # print(pic)
+
+def on_epoch_end(epoch, output, size, input):
+
     n = min(output.size(0), 8)
     comparison = torch.cat([input[:n],
                                   output[:n]])

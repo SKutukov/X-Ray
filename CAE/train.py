@@ -50,18 +50,28 @@ if __name__ == '__main__':
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate,
                              weight_decay=1e-5)
+    
+
+    loss = []
+    def write_list(filename, data):
+        thefile = open(filename, 'a')
+        thefile.write("%s\n" % data)
 
     for epoch in range(num_epochs):
+        train_loss = 0
         for data in dataloader:
             img, _ = data
             img = Variable(img).cuda()
             # ===================forward=====================
             output = model(img)
             loss = criterion(output, img)
+            train_loss += loss.data[0]
             # ===================backward====================
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
         # ===================log========================
-        on_epoch_end(epoch, num_epochs, loss, output, size, img)        
+        write_list("loss.txt",  train_loss / len(dataloader.dataset))
+        print('epoch [{}/{}], loss:{:.4f}'.format(epoch+1, num_epochs, train_loss / len(dataloader.dataset)))
+        on_epoch_end(epoch, output, size, img)
         save_model(epoch, model)    
