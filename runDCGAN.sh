@@ -1,7 +1,7 @@
 #!bash
 python3 dcgan/main.py --niter 200 \
 --outf results/out128x128 \
---dataroot /home/skutukov96/diplom/ChestXRAY/train --workers 4 \
+--dataroot ~/diplom/ChestXRAY/train --workers 4 \
 --cuda \
 --imageSize 128 \
 --nz 500 \
